@@ -3,7 +3,7 @@ import Select from 'react-select';
 import { Box, Button, Input, Text } from '@chakra-ui/react';
 import { getDataCollection , postDataCollection} from 'api/posts';
 
-const Category = () => {
+const Category = ({ onChange}) => {
   const [options, setOptions] = useState([]);
   const [value, setValue] = useState([]);
   const [show, setShow] = useState(false);
@@ -32,11 +32,15 @@ const Category = () => {
     setValue(e.target.value);
   }
 
+  const handleChangeInput = e => {
+    onChange(e.value)
+  }
+  
   return (
     <Box>
       <Text fontWeight="500" mb={2}> Category : </Text>
       <Box mb={4}>
-        <Select options={options} />
+        <Select options={options} onChange={handleChangeInput} />
       </Box>
       { show ? 
       <Box>

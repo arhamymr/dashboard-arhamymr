@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   FormControl,
   FormLabel,
@@ -7,6 +7,7 @@ import {
   Text, 
   Flex,
   useToast,
+  FormErrorMessage,
   Box, Button} from '@chakra-ui/react';
 import TextEditor from 'components/textEditor';
 import Upload from "components/upload";
@@ -30,12 +31,14 @@ const schema = yup.object({
 function Posts() {
   const toast = useToast();
   const router = useRouter();
-  
-  const { control, handleSubmit, register } = useForm({
-    resolver: yupResolver(schema)
+  const [loading, setLoading] = useState(false)
+  const { control, handleSubmit, register, formState: { errors }} = useForm({
+    resolver: yupResolver(schema),
+    mode: "onChange",
   });
 
   const onSubmit =  async(data) => {
+    setLoading(true)
     const fileUploaded = await uploadFile(data.thumbnail);
 
     const payload = {
@@ -48,7 +51,7 @@ function Posts() {
     }
 
     const result = await postDataCollection("posts", payload);
-    router.replace("/dashboard/posts");
+    
     if (result.status === "Success") {
       toast({
         title: 'Posts created.',
@@ -57,16 +60,20 @@ function Posts() {
         duration: 9000,
         isClosable: true,
       })
+      router.replace("/dashboard/posts");
     } else {
       toast({
         title: 'Something went wring',
-        status: 'success',
+        status: 'error',
         duration: 9000,
         isClosable: true,
       })
     }
+    setLoading(false)
+    
   }
 
+  console.log(errors, "erors")
   return (
     <Box w={'full'}
     bg={'white'}
@@ -89,13 +96,14 @@ function Posts() {
         gap={6}
       >
         <Box flex={3}>
-          <FormControl mb={4}>
+          <FormControl mb={4} isInvalid={!!errors.title}>
             <FormLabel htmlFor='title'>Title</FormLabel>
             <Input 
               name="title" 
               id='title' 
               placeholder='Tulis Title' 
               {...register("title")}/>
+            <FormErrorMessage>{errors?.title?.message}</FormErrorMessage>
           </FormControl>
           <FormControl mb={4}>
             <FormLabel htmlFor='description'>Description</FormLabel>
@@ -114,12 +122,19 @@ function Posts() {
           />
         </Box>
         <Box flex={1}>
-          <Category/>
+          <Controller
+            control={control}
+            rules={{
+            required: true,
+            }}
+            render={({ field: { onChange } }) => (
+              <Category onChange={onChange}/>
+            )}
+            name="category"
+          />
         </Box>
-        
-       
       </Flex> 
-      <Button type="submit" colorScheme={'blue'}>Submit</Button>
+      <Button type="submit" colorScheme={'blue'} isDisabled={loading || !!Object.keys(errors).length}>Submit</Button>
     </form>
     </Box>
     
