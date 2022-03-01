@@ -6,6 +6,7 @@ import {
   Input,
   Text, 
   Flex,
+  useToast,
   Box, Button} from '@chakra-ui/react';
 import TextEditor from 'components/textEditor';
 import Upload from "components/upload";
@@ -13,10 +14,11 @@ import { useForm , Controller } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
 import Category from 'components/category';
-
+import slugify from 'slugify';
 //api
 import { uploadFile } from 'api/upload';
 import { postDataCollection } from 'api/posts';
+import { useRouter } from 'next/router';
 
 const schema = yup.object({
   title: yup.string().required(),
@@ -26,8 +28,10 @@ const schema = yup.object({
 });
 
 function Posts() {
-
-  const { control, handleSubmit, register, error } = useForm({
+  const toast = useToast();
+  const router = useRouter();
+  
+  const { control, handleSubmit, register } = useForm({
     resolver: yupResolver(schema)
   });
 
@@ -36,13 +40,32 @@ function Posts() {
 
     const payload = {
       ...data,
+      created_data: new Date(),
+      updated_date: null,
       thumbnail: fileUploaded?.data?.url,
+      slug: slugify(data.title,"-"),
+      count: 0,
     }
-    console.log(payload, "payload")
-    const test = await postDataCollection("posts", payload)
-    console.log(test, fileUploaded)
+
+    const result = await postDataCollection("posts", payload);
+    router.replace("/dashboard/posts");
+    if (result.status === "Success") {
+      toast({
+        title: 'Posts created.',
+        description: "We've created your posts for you.",
+        status: 'success',
+        duration: 9000,
+        isClosable: true,
+      })
+    } else {
+      toast({
+        title: 'Something went wring',
+        status: 'success',
+        duration: 9000,
+        isClosable: true,
+      })
+    }
   }
-  console.log(error)
 
   return (
     <Box w={'full'}
