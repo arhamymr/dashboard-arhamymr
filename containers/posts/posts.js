@@ -11,8 +11,9 @@ import {
   Spacer,
   Heading,
   Flex,
+  Badge,
 } from '@chakra-ui/react';
-import { getDataCollection } from "api/posts";
+import { getDocument } from "api/posts";
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { trimString } from 'utils/string';
@@ -20,14 +21,17 @@ import { trimString } from 'utils/string';
 const PostsDetail = () => {
   const [data, setData] = useState([]);
   const router = useRouter();
+  
   useEffect(async() => {
-    const { data } = await getDataCollection("posts")
+    const { data } = await getDocument("posts")
     setData(data)
   }, []);
 
   const handleRouterEdit = (id) => {
     router.push(`/dashboard/posts/${id}`)
   }
+
+  console.log(data, "data")
 
   return (
     <>
@@ -46,6 +50,7 @@ const PostsDetail = () => {
             <Th>ID </Th>
             <Th>Title</Th>
             <Th>Description</Th>
+            <Th> Status </Th>
           </Tr>
         </Thead>
         <Tbody>
@@ -54,6 +59,7 @@ const PostsDetail = () => {
               <Td>{trimString(item.id, 10)}</Td>
               <Td>{trimString(item.title, 100)}</Td>
               <Td>{trimString(item.description, 100)}</Td>
+              <Td><Badge colorScheme={item.publish ? 'green' : 'purple'}>{item.publish ? 'Publish' : 'Draft'}</Badge></Td>
             </Tr>
           ))}
         </Tbody>

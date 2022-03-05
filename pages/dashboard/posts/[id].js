@@ -1,13 +1,13 @@
 import React from 'react';
 import MainLayout from '../../../layout/main';
 import Auth from "../../../layout/auth";
-import Post from '../../../containers/posts';
+import PostDetails from '../../../containers/posts/postDetail';
 
 function Home() {
   return ( 
     <Auth>
       <MainLayout>
-        <Post/>
+        <PostDetails/>
       </MainLayout>
     </Auth>
   )

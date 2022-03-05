@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
-import { Box, Button, Input, Text } from '@chakra-ui/react';
-import { getDataCollection , postDataCollection} from 'api/posts';
+import { Box, Button, Input, Text, Badge } from '@chakra-ui/react';
+import { getDocument , postDocumentWithCustomId} from 'api/posts';
 
-const Category = ({ onChange}) => {
+const Category = ({ onChange, defaultValue }) => {
   const [options, setOptions] = useState([]);
-  const [value, setValue] = useState([]);
+  const [value, setValue] = useState('');
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [selectValue, setSelectValue] = useState('');
 
   useEffect(async() => {
-    const { data } = await getDataCollection("categories");
+    const { data } = await getDocument("categories");
     setOptions(data);
   }, []);
-
 
   const addCategory = async() => {
     setLoading(true);
@@ -21,8 +21,9 @@ const Category = ({ onChange}) => {
       value,
       label: value,
     }
-    const data = await postDataCollection(`${newCategory.value}`, newCategory);
-    console.log(data)
+    
+    await postDocumentWithCustomId(`categories`, newCategory.value, newCategory);
+
     setOptions([...options, newCategory]);
     setShow(false);
     setLoading(false)
@@ -33,12 +34,17 @@ const Category = ({ onChange}) => {
   }
 
   const handleChangeInput = e => {
+    setSelectValue(e.value)
     onChange(e.value)
   }
   
+
   return (
     <Box>
       <Text fontWeight="500" mb={2}> Category : </Text>
+      <Box mb={4}>
+        <Badge colorScheme={'green'}>{selectValue || defaultValue}</Badge>
+      </Box>
       <Box mb={4}>
         <Select options={options} onChange={handleChangeInput} />
       </Box>
@@ -53,9 +59,8 @@ const Category = ({ onChange}) => {
         onClick={() => setShow(true)}
         fontSize="sm"
         cursor="pointer"
-      > + Add Category </Text> }
-     
-     
+      > + Add Category </Text> 
+      }
     </Box>
   );
 }
