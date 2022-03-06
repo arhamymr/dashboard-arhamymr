@@ -6,4 +6,5 @@ export const schema = yup.object({
   content: yup.string().required(),
   category: yup.string().required(),
   thumbnail: yup.mixed().required('File is required'),
+  source: yup.string().required(),
 });

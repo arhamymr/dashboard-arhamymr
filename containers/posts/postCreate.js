@@ -131,6 +131,7 @@ function Posts() {
               {...register("title")}/>
             <FormErrorMessage>{errors?.title?.message}</FormErrorMessage>
           </FormControl>
+         
           <FormControl mb={4}>
             <FormLabel htmlFor='description'>Description</FormLabel>
             <Textarea  
@@ -147,6 +148,16 @@ function Posts() {
             )}
             name="content"
           />
+           <FormControl mb={4} isInvalid={!!errors.title}>
+            <FormLabel htmlFor='title'>Sumber : </FormLabel>
+            <Input 
+              name="source" 
+              id='sumber' 
+              placeholder='Link sumber' 
+              defaultValue={detail?.source}
+              {...register("source")}/>
+            <FormErrorMessage>{errors?.title?.message}</FormErrorMessage>
+          </FormControl>
         </Box>
         <Box flex={1}>
           <Controller
@@ -173,7 +184,7 @@ function Posts() {
         colorScheme={'blue'} 
         isDisabled={loading || !!Object.keys(errors).length}
       >
-        {id ? 'Update and Publish' : 'Publish'}
+        {loading ? ' please wait ... ' : id ? 'Update and Publish' : 'Publish' }
       </Button>
     </form>
     </Box>

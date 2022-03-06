@@ -1,4 +1,10 @@
-import { collection, getFirestore, getDocs, addDoc, doc, getDoc, setDoc, updateDoc } from "firebase/firestore"; 
+import { 
+  collection, getFirestore, 
+  getDocs, addDoc, 
+  doc, getDoc, 
+  setDoc, updateDoc,
+  deleteDoc,
+ } from "firebase/firestore"; 
 
 
 export const getDocument = async (collectionName) => {
@@ -122,3 +128,23 @@ export const updateDocument = async (collectionName, docId, updateData) => {
     })
   }
 }
+
+export const deleteDocument = async (collectionName, docId) => {
+  const db = getFirestore();
+  try {
+    const documentRef = doc(db, collectionName, docId);
+    await deleteDoc(documentRef);
+
+    return {
+      status: 'Success',
+      message: 'Data has been delete from ' + collectionName,
+    }
+  } catch (error) {
+    throw new Error({
+      status: 'failed',
+      message: 'Failed to delete document from ' + collectionName,
+      error: error?.message,
+    })
+  }
+}
+
