@@ -1,6 +1,10 @@
+import React, { useState } from 'react';
 import {
   Flex,
   Box,
+  FormControl,
+  FormLabel,
+  Input,
   Stack,
   Link,
   Button,
@@ -8,71 +12,79 @@ import {
   Text,
   useColorModeValue,
 } from '@chakra-ui/react';
-import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { useRouter } from 'next/router';
-import React from 'react';
+import { loginWithEmailAndPassword } from 'api/user';
+import { useForm } from "react-hook-form";
 
 export default function SimpleCard() {
   const router = useRouter();
-  const signin = () => {
+  const { register, handleSubmit } = useForm();
+  const [loading, setLoading] = useState(false)
 
-    const auth = getAuth();
-    const provider = new GoogleAuthProvider();
-    signInWithPopup(auth, provider)
-      .then((result) => {
-        // This gives you a Google Access Token. You can use it to access the Google API.
-        const credential = GoogleAuthProvider.credentialFromResult(result);
-        const token = credential.accessToken;
-        // The signed-in user info.
-        const user = result.user;
-        // ...
-        console.log(user);
-        router.push('/dashboard/posts')
-      }).catch((error) => {
-        // Handle Errors here.
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        // The email of the user's account used.
-        const email = error.email;
-        // The AuthCredential type that was used.
-        const credential = GoogleAuthProvider.credentialFromError(error);
-        // ...
-      });
+  const onSubmit = async(data) => {
+    setLoading(true)
+    try {
+      await loginWithEmailAndPassword(data.email, data.password)
+      router.push('/dashboard/posts');
+    } catch (e) {
+      alert('Your passwors and email wrong');
+    } finally {
+      setLoading(false);
+    }
   }
- 
+
   return (
-    <Flex
-      minH={'100vh'}
-      align={'center'}
-      justify={'center'}
-      bg={useColorModeValue('gray.50', 'gray.800')}>
-      <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12} px={6}>
-        <Stack align={'center'}>
-          <Heading fontSize={'4xl'}>Untuk saat ini hanya bisa login dengan akun google</Heading>
-          <Text fontSize={'lg'} color={'gray.600'}>
-            to enjoy all of our cool <Link color={'blue.400'}>features</Link> ✌️
-          </Text>
-        </Stack>
-        <Box
-          rounded={'lg'}
-          bg={useColorModeValue('white', 'gray.700')}
-          boxShadow={'lg'}
-          p={8}>
-          <Stack spacing={4}>
-            <Stack spacing={10}>
-              <Button
-                bg={'blue.400'}
-                color={'white'}
-                onClick={signin}
-                _hover={{
-                  bg: 'blue.500',
-                }}>
-                Login with google
-              </Button>
-            </Stack>
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <Flex
+        minH={'100vh'}
+        align={'center'}
+        justify={'center'}
+        bg={useColorModeValue('gray.50', 'gray.800')}>
+        <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12} px={6}>
+          <Stack align={'center'}>
+            <Heading fontSize={'4xl'}>Sign in to your account</Heading>
+            <Text fontSize={'lg'} color={'gray.600'}>
+              to enjoy all of our cool <Link color={'blue.400'}>features</Link> ✌️
+            </Text>
           </Stack>
-        </Box>
-      </Stack>
-    </Flex>
+          <Box
+            rounded={'lg'}
+            bg={useColorModeValue('white', 'gray.700')}
+            boxShadow={'lg'}
+            p={8}>
+            <Stack spacing={4}>
+              <FormControl id="email">
+                <FormLabel>Email address</FormLabel>
+                <Input 
+                  name="email" 
+                  type="email" 
+                  {...register("email")} 
+                />
+              </FormControl>
+              <FormControl id="password">
+                <FormLabel>Password</FormLabel>
+                <Input 
+                  name="password" 
+                  type="password" 
+                  {...register("password")}
+                />
+              </FormControl>
+              <Stack spacing={10}>
+                <Button
+                  isDisabled={loading}
+                  colorScheme="blue"
+                  type="submit"
+                  _hover={{
+                    bg: 'blue.500',
+                  }}>
+                  {loading ? 'Loading' : 'Sign in'}
+                </Button>
+              </Stack>
+            </Stack>
+          </Box>
+        </Stack>
+      </Flex>
+    </form>
+   
   );
 }
