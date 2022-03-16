@@ -13,7 +13,7 @@ function useDetail() {
       const payload = {
         ...data,
         thumbnail: fileUploaded?.data?.url,
-        slug: slugify(data.title,"-"),
+        slug: slugify(data.title,"-").toLocaleLowerCase(),
         count: 0,
       }
       await postDocument("posts", payload);
