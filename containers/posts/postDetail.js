@@ -50,6 +50,7 @@ const PostsDetail = () => {
           <Text fontSize="sm" color="gray.400" mb={5}> 
             Created Date: {moment(detail?.created_date?.toDate()).format('MMMM Do YYYY')}
           </Text>
+          <Text  maxWidth={600} mb={4}> Author : {detail.author} </Text>
           <Text  maxWidth={600} mb={4}>{detail.description} </Text>
           <Text> Content: </Text>
           <Box maxWidth={600} dangerouslySetInnerHTML={{ __html: detail.content}}/>

@@ -131,6 +131,17 @@ function Posts() {
               {...register("title")}/>
             <FormErrorMessage>{errors?.title?.message}</FormErrorMessage>
           </FormControl>
+
+          <FormControl mb={4} isInvalid={!!errors.title}>
+            <FormLabel htmlFor='title'>Author</FormLabel>
+            <Input 
+              name="author" 
+              id='author' 
+              placeholder='Masukkan nama author' 
+              defaultValue={detail?.author}
+              {...register("author")}/>
+            <FormErrorMessage>{errors?.author?.message}</FormErrorMessage>
+          </FormControl>
          
           <FormControl mb={4}>
             <FormLabel htmlFor='description'>Description</FormLabel>
