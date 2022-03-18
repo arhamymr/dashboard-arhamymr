@@ -132,7 +132,7 @@ function Posts() {
             <FormErrorMessage>{errors?.title?.message}</FormErrorMessage>
           </FormControl>
 
-          <FormControl mb={4} isInvalid={!!errors.title}>
+          <FormControl mb={4} isInvalid={!!errors.author}>
             <FormLabel htmlFor='title'>Author</FormLabel>
             <Input 
               name="author" 
