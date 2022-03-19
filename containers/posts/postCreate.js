@@ -8,6 +8,7 @@ import {
   Flex,
   useToast,
   FormErrorMessage,
+  HStack,
   Box, Button} from '@chakra-ui/react';
 import TextEditor from 'components/textEditor';
 import Upload from "components/upload";
@@ -64,7 +65,6 @@ function Posts() {
 
     try {
       if (id){
-        console.log(data,"data", id);
         await update(id, {...data, publish: isPublish} );
         toast({
           title: 'Posts updated',
@@ -132,17 +132,28 @@ function Posts() {
             <FormErrorMessage>{errors?.title?.message}</FormErrorMessage>
           </FormControl>
 
-          <FormControl mb={4} isInvalid={!!errors.author}>
-            <FormLabel htmlFor='title'>Author</FormLabel>
-            <Input 
-              name="author" 
-              id='author' 
-              placeholder='Masukkan nama author' 
-              defaultValue={detail?.author}
-              {...register("author")}/>
-            <FormErrorMessage>{errors?.author?.message}</FormErrorMessage>
-          </FormControl>
-         
+          <HStack mb={4}>
+            <FormControl isInvalid={!!errors.author}>
+              <FormLabel htmlFor='title'>Author</FormLabel>
+              <Input 
+                name="author" 
+                id='author' 
+                placeholder='Masukkan nama author' 
+                defaultValue={detail?.author.name}
+                {...register("author")}/>
+            </FormControl>
+            <FormControl>
+              <FormLabel htmlFor='title'>Occupation</FormLabel>
+              <Input 
+                name="occupation" 
+                id='occupation' 
+                placeholder='Masukkan Pekerjaan' 
+                defaultValue={detail?.author?.occupation}
+                {...register("occupation")}/>
+            </FormControl>
+          </HStack>
+          <FormErrorMessage>{errors?.author?.message}</FormErrorMessage>
+          
           <FormControl mb={4}>
             <FormLabel htmlFor='description'>Description</FormLabel>
             <Textarea  

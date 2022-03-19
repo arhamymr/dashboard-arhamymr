@@ -72,8 +72,14 @@ export const postDocument = async (collectionName, data) => {
 
   const payload = {
     ...data,
+    author: {
+      name: data.author,
+      occupation: data.occupation
+    },
     created_date: new Date(),
   }
+
+  delete payload.occupation;
 
   try {
     await addDoc(collection(db, collectionName), payload);
@@ -113,8 +119,13 @@ export const updateDocument = async (collectionName, docId, updateData) => {
     const documentRef = doc(db, collectionName, docId);
     const payload = {
       ...updateData,
+      author : {
+        name: updateData.author,
+        occupation: updateData.occupation
+      },
       updated_date: new Date(),
     }
+    delete payload.occupation
     await updateDoc(documentRef, payload);
     return {
       status: 'Success',
