@@ -139,7 +139,7 @@ function Posts() {
                 name="author" 
                 id='author' 
                 placeholder='Masukkan nama author' 
-                defaultValue={detail?.author.name}
+                defaultValue={detail?.author?.name}
                 {...register("author")}/>
             </FormControl>
             <FormControl>
