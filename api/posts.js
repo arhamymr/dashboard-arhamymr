@@ -3,24 +3,87 @@ import {
   getDocs, addDoc, 
   doc, getDoc, 
   setDoc, updateDoc,
-  deleteDoc,
+  deleteDoc, where,
+  limit, query, startAfter, orderBy
  } from "firebase/firestore"; 
 
-
-export const getDocument = async (collectionName) => {
+ export const getDocumentSearch = async (collectionName, queryText) => {
   const db = getFirestore();
-
   try {
-    const postRef = collection(db, collectionName);
+    const postRef = query(
+      collection(db, collectionName), 
+      where('title' ,'==', queryText)
+    );
     const querySnapshot = await getDocs(postRef);
+
     const data = querySnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
     }));
+
     return {
       status: 'Success',
       message: 'Data has been fetched from' + collectionName,
       data,
+    }
+  } catch (error) {
+    console.log(error)
+    throw new Error({
+      status: 'failed',
+      message: 'Failed to get document from' + collectionName,
+      error: error?.message,
+    })
+  }
+};
+
+
+export const getDocument = async (collectionName, size = 10) => {
+  const db = getFirestore();
+  try {
+    const postRef = query(collection(db, collectionName), orderBy("created_date"), limit(size));
+    const querySnapshot = await getDocs(postRef);
+    const lastVisible = querySnapshot.docs[querySnapshot.docs.length-1];
+    console.log(lastVisible, "last visible")
+    const data = querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+
+    return {
+      status: 'Success',
+      message: 'Data has been fetched from' + collectionName,
+      data,
+      lastVisible,
+    }
+  } catch (error) {
+    throw new Error({
+      status: 'failed',
+      message: 'Failed to get document from' + collectionName,
+      error: error?.message,
+    })
+  }
+};
+
+export const getDocumentNext = async (collectionName, lastVisible, size = 10) => {
+  const db = getFirestore();
+  try {
+    const postRef = query(collection(db, collectionName), orderBy("created_date"), startAfter(lastVisible), limit(size));
+    const querySnapshot = await getDocs(postRef);
+
+    const newlastVisible = querySnapshot.docs[querySnapshot.docs.length-1];
+    const data = querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+
+    return {
+      status: 'Success',
+      message: 'Data has been fetched from' + collectionName,
+      data,
+      pagination : { 
+        lastVisible: newlastVisible,
+        totalDatas: querySnapshot.docs.length,
+      }
     }
   } catch (error) {
     throw new Error({
