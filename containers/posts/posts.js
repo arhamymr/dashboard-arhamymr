@@ -22,15 +22,19 @@ import { trimString } from 'utils/string';
 
 const PostsDetail = () => {
   const [data, setData] = useState([]);
-  const [lastVisible, setLastVisible] = useState(0);
+  const [lastVisible, setLastVisible] = useState('');
   const [search,setSearch] = useState('');
   const router = useRouter();
   
   useEffect(async() => {
+    handleReset()
+  }, []);
+
+  const handleReset = async() => {
     const { data, lastVisible } = await getDocument("posts", 5)
     setData(data)
     setLastVisible(lastVisible)
-  }, []);
+  }
 
   const handleRouterEdit = (id) => {
     router.push(`/dashboard/posts/${id}`)
@@ -54,6 +58,7 @@ const PostsDetail = () => {
   const handleSearch = async () => {
     const {data} = await getDocumentSearch("posts", search)
     setData(data)
+    setLastVisible('')
   }
 
   return (
@@ -72,8 +77,9 @@ const PostsDetail = () => {
     <Box  bg={'white'} rounded="md" mb={4} p={4}>
       <HStack mb={6}>
         <Spacer/>
+        <Button onClick={handleReset}>Reset</Button>
         <Input maxW={300} placeholder="Search article.." onChange={e => setSearch(e.target.value)}/> 
-        <Button onClick={handleSearch}> Search </Button>
+        <Button colorScheme={'blue'} onClick={handleSearch}> Search </Button>
       </HStack>
       
       <Table variant='simple'>
@@ -98,7 +104,7 @@ const PostsDetail = () => {
           ))}
         </Tbody>
       </Table>
-      {!!data.lastVisible && <Button colorScheme="blue" onClick={handleNext} mt={4}>Load More Article</Button>}
+      {!!lastVisible && <Button colorScheme="blue" onClick={handleNext} mt={4}>Load More Article</Button>}
   </Box>
   </>
     
